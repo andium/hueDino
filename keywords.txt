@@ -1,0 +1,24 @@
+AnduinoNFC	KEYWORD2
+lightOn	KEYWORD2
+lightOff	KEYWORD2
+brightness	KEYWORD2
+hue	KEYWORD2
+sat	KEYWORD2
+colorLoop	KEYWORD2
+alert	KEYWORD2
+flash	KEYWORD2
+colorTemp	KEYWORD2
+getLightIds	KEYWORD2
+turnAllLightsOn	KEYWORD2
+turnAllLightsOff	KEYWORD2
+groupOn	KEYWORD2
+groupOff	KEYWORD2
+getGroupIds	KEYWORD2
+groupBrightness	KEYWORD2	
+groupHue	KEYWORD2
+groupSat	KEYWORD2
+groupColorLoop	KEYWORD2
+groupAlert	KEYWORD2
+groupFlash	KEYWORD2
+groupColorTemp	KEYWORD2
+
