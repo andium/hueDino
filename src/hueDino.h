@@ -1,9 +1,43 @@
+/*******************************************************************
+ Check out the included Arduino sketches and the getting started 
+ guide here! 
+ https://github.com/andium/hueDino
+ 
+ This is an Arduino implementation of the Philips Hue API.
+ It currently supports the critical API endpoints necessary
+ for registering an application with the Hue Bridge and changing 
+ light or group attributes. This library is tightly coupled to the 
+ WiFi101 library, which means it will work great with the Arduino MKR1000, 
+ Adafruit Feather MO w/ the ATWINC1500, AnduinoWiFi shield 
+ or anywhere the WiFi101 library is supported. A slightly modified version
+ of Mario Banzi's RestClient is included with src and is used to simplify
+ the RESTful calls to the Hue API.
+ https://github.com/arduino-libraries/RestClient
+ Json parsing is provided via ArduinoJson, thanks bblanchon! Be sure to 
+ clone and install his library prior to trying this out!
+ https://github.com/bblanchon/ArduinoJson
+ 
+ Written by Brian Carbonette Copyright © 2017 Andium
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ *******************************************************************/
+
 #ifndef __hueDino_H
 #define __hueDino_H
 
 #include <Arduino.h>
 #include "Client.h"
-#include "RestClient.h"
+#include "./include/RestClient.h" 
 #include "ArduinoJson.h"
 #include "WiFi101.h"
 
@@ -15,19 +49,21 @@
 #define MAX_GROUPS_PER_BRIDGE 64
 
 #define DEBUG
+/*#define DEBUG_IDs*/
 
 class hueDino {
 
 public:
 	String lightIds[MAX_LIGHTS_PER_BRIDGE] = {}; //50 max# of lights per bridge
-	String lightNames[MAX_LIGHTS_PER_BRIDGE] = {}; //50 max# of lights per bridge
+	String lightNames[MAX_LIGHTS_PER_BRIDGE] = {}; 
 	String groupIds[MAX_GROUPS_PER_BRIDGE] = {}; //64 max# of groups per bridge
-	String groupNames[MAX_GROUPS_PER_BRIDGE] = {}; //64 max# of groups per bridge
+	String groupNames[MAX_GROUPS_PER_BRIDGE] = {}; 
 	uint8_t numGroups = 0;
 	uint8_t numLights = 0;
 
 	hueDino(WiFiClient& hueClient, const char* hueBridgeIP);
 	void begin(const char* userId);
+	String registerApp(String username);
 
 	/*Single /light endpoint methods*/
 	String lightOn(uint8_t lightId);

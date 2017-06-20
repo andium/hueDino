@@ -1,3 +1,37 @@
+/*******************************************************************
+ Check out the included Arduino sketches and the getting started 
+ guide here! 
+ https://github.com/andium/hueDino
+ 
+ This is an Arduino implementation of the Philips Hue API.
+ It currently supports the critical API endpoints necessary
+ for registering an application with the Hue Bridge and changing 
+ light or group attributes. This library is tightly coupled to the 
+ WiFi101 library, which means it will work great with the Arduino MKR1000, 
+ Adafruit Feather MO w/ the ATWINC1500, AnduinoWiFi shield 
+ or anywhere the WiFi101 library is supported. A slightly modified version
+ of Mario Banzi's RestClient is included with src and is used to simplify
+ the RESTful calls to the Hue API.
+ https://github.com/arduino-libraries/RestClient
+ Json parsing is provided via ArduinoJson, thanks bblanchon! Be sure to 
+ clone and install his library prior to trying this out!
+ https://github.com/bblanchon/ArduinoJson
+ 
+ Written by Brian Carbonette Copyright © 2017 Andium
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ *******************************************************************/
+
 #include "hueDino.h"
 
 
@@ -19,81 +53,66 @@ void hueDino::begin(const char* userId)
 	#endif
 }
 
-String hueDino::_lightStateEndpoint(uint8_t lightId)
+String hueDino::registerApp(String username)
 {
-	String endpoint = "/api/";
+	String endpoint = "/api";
+	String body = "{\"devicetype\":\"";
 
-	endpoint += _userId;
-	endpoint += "/lights/";
-	endpoint += lightId;
-	endpoint += "/state";
+	body += username;
+	body += "\"}";
 
-	return endpoint;
-}
-
-String hueDino::_groupActionEndpoint(uint8_t groupId)
-{
-	String endpoint = "/api/";
-
-	endpoint += _userId;
-	endpoint += "/groups/";
-	endpoint += groupId;
-	endpoint += "/action";
-
-	return endpoint;
-}
-
-String hueDino::_getGroups(void)
-{
-	String endpoint = "/api/";
-
-	endpoint += _userId;
-	endpoint += "/groups";
-
-	_restclient.get(endpoint);
-
-	return _restclient.readResponse();
-}
-
-String hueDino::_getLights(void)
-{
-	String endpoint = "/api/";
-
-	endpoint += _userId;
-	endpoint += "/lights";
-
-	_restclient.get(endpoint);
+	_restclient.post(endpoint, body);
 
 	return _restclient.readResponse();
 }
 
 String hueDino::lightOn(uint8_t lightId)
-{
+{	
+	#ifdef DEBUG
+		Serial.println();Serial.print("Light ID: ");
+		Serial.print(lightId);Serial.println(" ON");
+	#endif
     _restclient.put(_lightStateEndpoint(lightId), LIGHT_ON);
     return _restclient.readResponse();
 }
 
 String hueDino::lightOff(uint8_t lightId)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Light ID: ");
+		Serial.print(lightId);Serial.println(" OFF");
+	#endif
     _restclient.put(_lightStateEndpoint(lightId), LIGHT_OFF);
     return _restclient.readResponse();
 }
 
 String hueDino::groupOn(uint8_t groupId)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Group ID: ");
+		Serial.print(groupId);Serial.println(" ON");
+	#endif
     _restclient.put(_groupActionEndpoint(groupId), LIGHT_ON);
     return _restclient.readResponse();
-
 }
 
 String hueDino::groupOff(uint8_t groupId)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Group ID: ");
+		Serial.print(groupId);Serial.println(" OFF");
+	#endif
     _restclient.put(_groupActionEndpoint(groupId), LIGHT_OFF);
     return _restclient.readResponse();
 }
 
 String hueDino::brightness(uint8_t lightId, uint8_t brightness)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Light ID: ");
+		Serial.print(lightId);Serial.print(" set brightness to ");
+		Serial.println(brightness);
+	#endif
 	String bri = "{\"transitiontime\":0, \"bri\":";
 
 	bri += String(brightness);
@@ -105,6 +124,11 @@ String hueDino::brightness(uint8_t lightId, uint8_t brightness)
 
 String hueDino::hue(uint8_t lightId, uint16_t setHue)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Light ID: ");
+		Serial.print(lightId);Serial.print(" set hue to ");
+		Serial.println(setHue);
+	#endif
 	String hue = "{\"transitiontime\":0, \"hue\":";
 
 	hue += String(setHue);
@@ -114,9 +138,14 @@ String hueDino::hue(uint8_t lightId, uint16_t setHue)
     return _restclient.readResponse();	
 }
 
-//0-254
+//Input range 0-254
 String hueDino::sat(uint8_t lightId, uint8_t setSat)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Light ID: ");
+		Serial.print(lightId);Serial.print(" set saturation to ");
+		Serial.println(setSat);
+	#endif
 	String sat = "{\"transitiontime\":0, \"sat\":";
 
 	sat += String(setSat);
@@ -126,9 +155,14 @@ String hueDino::sat(uint8_t lightId, uint8_t setSat)
     return _restclient.readResponse();	
 }
 
-//6500K to 2000K
+//Input Raneg 6500 to 2000
 String hueDino::colorTemp(uint8_t lightId, uint16_t temp)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Light ID: ");
+		Serial.print(lightId);Serial.print(" set temperature to ");
+		Serial.println(temp);
+	#endif
 	uint16_t ct = map(temp, 2000, 6500, 153, 500); //map to hue API range 153-500
 	String ctVal = "{\"transitiontime\":0, \"ct\":";
 
@@ -147,6 +181,11 @@ String hueDino::colorTemp(uint8_t lightId, uint16_t temp)
 
 String hueDino::colorLoop(uint8_t lightId, bool enable)
 {	
+	#ifdef DEBUG
+		Serial.println();Serial.print("Light ID: ");
+		Serial.print(lightId);Serial.print(" set color loop to ");
+		Serial.println(enable);
+	#endif
 	if(enable)
 	{
 		_restclient.put(_lightStateEndpoint(lightId), COLOR_LOOP_ON);
@@ -159,9 +198,14 @@ String hueDino::colorLoop(uint8_t lightId, bool enable)
     return _restclient.readResponse();
 }
 
-//none, select, or lselect
+//alertState types: none, select, or lselect
 String hueDino::alert(uint8_t lightId, String alertState)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Light ID: ");
+		Serial.print(lightId);Serial.print(" set alert to ");
+		Serial.println(alertState);
+	#endif
 	String alert = "{\"transitiontime\":0, \"alert\":\"";
 
 	alert += alertState;
@@ -173,6 +217,10 @@ String hueDino::alert(uint8_t lightId, String alertState)
 
 String hueDino::flash(uint8_t lightId)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Light ID: ");
+		Serial.print(lightId);Serial.print(" set to flash ");
+	#endif
     _restclient.put(_lightStateEndpoint(lightId), "{\"transitiontime\":0, \"alert\":\"select\"}");
     delay(800);
     return _restclient.readResponse();
@@ -180,7 +228,7 @@ String hueDino::flash(uint8_t lightId)
 
 String hueDino::getLightIds(void)
 {
-	StaticJsonBuffer<4096> jsonBuffer;
+	StaticJsonBuffer<4096> jsonBuffer; //may need to increase static buffer for large # lights
 	String json = ""; 
 	
 
@@ -195,7 +243,7 @@ String hueDino::getLightIds(void)
 		lightIds[j] = it->key;
 		lightNames[j] = root[lightIds[j]]["name"].asString();
 
-		#ifdef DEBUG
+		#ifdef DEBUG_IDs
 			Serial.println();
 			Serial.print("Light ID: ");
 			Serial.println(lightIds[j]);
@@ -228,7 +276,7 @@ String hueDino::getGroupIds(void)
 		groupIds[j] = it->key;
 		groupNames[j] = root[groupIds[j]]["name"].asString();
 
-		#ifdef DEBUG
+		#ifdef DEBUG_IDs
 			Serial.println();
 			Serial.print("Group ID: ");
 			Serial.println(groupIds[j]);
@@ -280,6 +328,11 @@ void hueDino::turnAllLightsOn(void)
 
 String hueDino::groupBrightness(uint8_t groupId, uint8_t brightness)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Group ID: ");
+		Serial.print(groupId);Serial.print(" set brightness to ");
+		Serial.println(brightness);
+	#endif
 	String bri = "{\"transitiontime\":0, \"bri\":";
 
 	bri += String(brightness);
@@ -291,6 +344,11 @@ String hueDino::groupBrightness(uint8_t groupId, uint8_t brightness)
 
 String hueDino::groupHue(uint8_t groupId, uint16_t setHue)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Group ID: ");
+		Serial.print(groupId);Serial.print(" set hue to ");
+		Serial.println(setHue);
+	#endif
 	String hue = "{\"transitiontime\":0, \"hue\":";
 
 	hue += String(setHue);
@@ -302,6 +360,11 @@ String hueDino::groupHue(uint8_t groupId, uint16_t setHue)
 
 String hueDino::groupSat(uint8_t groupId, uint8_t setSat)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Group ID: ");
+		Serial.print(groupId);Serial.print(" set saturation to ");
+		Serial.println(setSat);
+	#endif
 	String sat = "{\"transitiontime\":0, \"sat\":";
 
 	sat += String(setSat);
@@ -313,6 +376,11 @@ String hueDino::groupSat(uint8_t groupId, uint8_t setSat)
 
 String hueDino::groupColorLoop(uint8_t groupId, bool enable)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Group ID: ");
+		Serial.print(groupId);Serial.print(" set color loop to ");
+		Serial.println(enable);
+	#endif
 	if(enable)
 	{
 		_restclient.put(_groupActionEndpoint(groupId), COLOR_LOOP_ON);
@@ -327,6 +395,11 @@ String hueDino::groupColorLoop(uint8_t groupId, bool enable)
 
 String hueDino::groupAlert(uint8_t groupId, String alertState)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Group ID: ");
+		Serial.print(groupId);Serial.print(" set alert to ");
+		Serial.println(alertState);
+	#endif
 	String alert = "{\"transitiontime\":0, \"alert\":\"";
 
 	alert += alertState;
@@ -338,6 +411,10 @@ String hueDino::groupAlert(uint8_t groupId, String alertState)
 
 String hueDino::groupFlash(uint8_t groupId)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Group ID: ");
+		Serial.print(groupId);Serial.print(" set to flash");
+	#endif
 	 _restclient.put(_groupActionEndpoint(groupId), "{\"transitiontime\":0, \"alert\":\"select\"}");
     delay(800);
     return _restclient.readResponse();
@@ -345,6 +422,11 @@ String hueDino::groupFlash(uint8_t groupId)
 
 String hueDino::groupColorTemp(uint8_t groupId, uint16_t temp)
 {
+	#ifdef DEBUG
+		Serial.println();Serial.print("Group ID: ");
+		Serial.print(groupId);Serial.print(" set temperature to ");
+		Serial.println(temp);
+	#endif
 	uint16_t ct = map(temp, 2000, 6500, 153, 500); //map to hue API range 153-500
 	String ctVal = "{\"transitiontime\":0, \"ct\":";
 
@@ -361,7 +443,53 @@ String hueDino::groupColorTemp(uint8_t groupId, uint16_t temp)
     return _restclient.readResponse();
 }
 
+String hueDino::_lightStateEndpoint(uint8_t lightId)
+{
+	String endpoint = "/api/";
 
+	endpoint += _userId;
+	endpoint += "/lights/";
+	endpoint += lightId;
+	endpoint += "/state";
+
+	return endpoint;
+}
+
+String hueDino::_groupActionEndpoint(uint8_t groupId)
+{
+	String endpoint = "/api/";
+
+	endpoint += _userId;
+	endpoint += "/groups/";
+	endpoint += groupId;
+	endpoint += "/action";
+
+	return endpoint;
+}
+
+String hueDino::_getGroups(void)
+{
+	String endpoint = "/api/";
+
+	endpoint += _userId;
+	endpoint += "/groups";
+
+	_restclient.get(endpoint);
+
+	return _restclient.readResponse();
+}
+
+String hueDino::_getLights(void)
+{
+	String endpoint = "/api/";
+
+	endpoint += _userId;
+	endpoint += "/lights";
+
+	_restclient.get(endpoint);
+
+	return _restclient.readResponse();
+}
 
 
 
