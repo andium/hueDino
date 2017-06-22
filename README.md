@@ -74,5 +74,7 @@ All the hue lights in your house will start blinking, turning on for 3 seconds, 
 * ESP8266 Compatibility
 * More global attribute functions for changing attributes accross all groups
 
+## Contributions
+Thanks go out to [Massimo Banzi](https://github.com/mbanzi) for the Ardunio WiFi [RestClient](https://github.com/arduino-libraries/RestClient) port and [Benoit Blanchon](https://github.com/bblanchon) for [ArduinoJson](https://github.com/bblanchon/ArduinoJson)! 
               
 
