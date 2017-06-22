@@ -62,7 +62,7 @@ public:
 	uint8_t numLights = 0;
 
 	hueDino(WiFiClient& hueClient, const char* hueBridgeIP);
-	void begin(const char* userId);
+	uint8_t begin(const char* userId);
 	String registerApp(String username);
 
 	/*Single /light endpoint methods*/

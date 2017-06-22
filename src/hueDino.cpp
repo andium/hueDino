@@ -42,15 +42,48 @@ hueDino::hueDino(WiFiClient& hueClient, const char* hueBridgeIP)
 	_hueBridgeIP = hueBridgeIP;	
 }
 
-void hueDino::begin(const char* userId)
+uint8_t hueDino::begin(const char* userId)
 {	
 	_restclient = RestClient(_hueClient, _hueBridgeIP);
 	_userId = userId;
-	#ifdef DEBUG
-		Serial.println();
-		Serial.print("Starting hueDino - connecting to Phillips Hue Bridge at: ");
-		Serial.println(_hueBridgeIP);
-	#endif
+
+	//Check for username
+	if(_userId == "")
+	{
+		Serial.println();Serial.println();
+		Serial.println("Missing username!");
+		Serial.println("Have you ran the 'getUsername' sketch and authorized your app?");
+		Serial.println("Don't forge to edit ---> #define hueUser \"yourUsernameHere\"   //ex: \"Ur80SKqRKO0ojlFInzdjAZEHy0kjYWznakufY60m\"");
+		Serial.println("At the top of the sketch!");
+		while(true){};
+	}
+	Serial.println();
+	Serial.print("Starting hueDino - verifying connection to Phillips Hue Bridge at: ");
+	Serial.println(_hueBridgeIP);
+	
+	//check for static hue webpage served by bridge to make sure
+	//we have the correct IP address
+	int status = 0;
+	uint8_t counter = 0;
+	while(status != 200)
+	{	
+		Serial.print("...");
+		status = _restclient.get("/");
+		delay(200);
+		++counter;
+
+		if(counter > 3)
+		{
+			Serial.print("Can't find Hue Bridge! Is ");
+			Serial.print(_hueBridgeIP);
+			Serial.println(" the correct IP address?");
+		    while(true){};
+
+		}
+	}
+	Serial.println("Connected!");
+	return 0;
+	
 }
 
 String hueDino::registerApp(String username)

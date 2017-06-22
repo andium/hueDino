@@ -25,13 +25,13 @@
  
 #include "hueDino.h"
 
-#define hueUser ""      //ex: "Ur80SKqRKO0ojlFInzdjAZEHy0kjYWznakufY60m"
-#define lightId 1
+#define hueUser "WL65MOih1azZ3VIxsyOpGqIWQE60iUtryGHmh8Ax"      //ex: "Ur80SKqRKO0ojlFInzdjAZEHy0kjYWznakufY60m"
+#define lightId 4
 
 
-char ssid[] = "Beach Community";       // your network SSID (name)
-char pass[] = "Binghamton2011";       // your network password
-char hueBridge[] = "192.168.1.3";  // hue bridge ip address ex: "192.168.1.3"
+char ssid[] = "";       // your network SSID (name)
+char pass[] = "";       // your network password
+char hueBridge[] = "";  // hue bridge ip address ex: "192.168.1.3"
 
 WiFiClient wifi;
 hueDino hue = hueDino(wifi, hueBridge);
