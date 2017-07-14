@@ -1,6 +1,6 @@
 # hueDino
 
-An Arduino library for WiFi101 connected devices implementing the [Philips Hue API](https://developers.meethue.com/philips-hue-api)! This library handles API calls to the Philips Hue Bridge, which in turn allows you to control your lights from your WiFi enabled Arduino! Now you can control your lights using triggers created by your own sensors, homemade interfaces, switches, or even remotely! 
+An Arduino library for WiFi101 connected devices implementing the [Philips Hue API](https://developers.meethue.com/philips-hue-api)! This library handles API calls to the Philips Hue Bridge, which in turn allows you to control your lights from your WiFi enabled Arduino! Now you can control your lights using triggers created by your own sensors, homemade interfaces, switches, even remotely! 
 
 Your Arduino can send requests to turn all of your lights off with one command, or set individual light attributes one by one. Functions have been written to manipulate attributes for the [/lights](https://developers.meethue.com/documentation/lights-api) and [/groups](https://developers.meethue.com/documentation/groups-api) endpoints of the Hue API. To learn more about the Hue API check out the [Philips Hue API documentation](https://developers.meethue.com/philips-hue-api). To learn more about how Philips Hue works check out [How Hue Works](https://www.developers.meethue.com/documentation/how-hue-works).
 
@@ -28,7 +28,7 @@ Let's get started!
 
 # App Registration
 
-To start communicating with the Hue Bridge you need to authenticate your Arduino(your application) with the bridge. In order to do so you must have physical access to the bridge. Essentially, the arduino requests a username hash, you press the button on the top of the bridge, and then request a username hash again. Your second request returns you this...
+To start communicating with the Hue Bridge you need to authenticate your Arduino(your application) with the bridge. In order to do so you must have physical access to the bridge. Essentially, the arduino requests a username hash, you press the button on the top of the bridge, and then request a username again. Your second request returns you this...
 
 ```
 [
@@ -62,8 +62,8 @@ All the hue lights in your house will start blinking, turning on for 3 seconds, 
 
 # Things you should know...
 
-* Totally regeret that state you just put our lights in? Unplug your Arduino, and toggle the power to your lights to reset.
-* You can safely send about 10 /lights endpoint commands in a row before things get strange.
+* Totally regeret that state you just put your lights in? Unplug your Arduino, and toggle the power to your lights to reset.
+* You can safely send about 10 /lights endpoint commands in a row/second before things get strange.
 * You can only send 1 /groups targeted command per second! Be careful not to overload the bridge.
 * A list of other interesting design decisions and intricacies of the Hue Lights API [can be found here.](https://developers.meethue.com/things-you-need-know)
 
