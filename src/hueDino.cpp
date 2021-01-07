@@ -261,20 +261,21 @@ String hueDino::flash(uint8_t lightId)
 
 String hueDino::getLightIds(void)
 {
-	StaticJsonBuffer<4096> jsonBuffer; //may need to increase static buffer for large # lights
+	StaticJsonDocument<4096> jsonBuffer; //may need to increase static buffer for large # lights
 	String json = ""; 
 	
 
 	json = _getLights();
-	JsonObject& root = jsonBuffer.parseObject(json);
+	deserializeJson(jsonBuffer, json);
+	JsonObject root = jsonBuffer.as<JsonObject>();
     
 	
 	int j=0;
 
 	for(JsonObject::iterator it=root.begin(); it!=root.end(); ++it)
 	{
-		lightIds[j] = it->key;
-		lightNames[j] = root[lightIds[j]]["name"].asString();
+		lightIds[j] = it->key().c_str();
+		lightNames[j] = jsonBuffer[lightIds[j]]["name"].as<String>();
 
 		#ifdef DEBUG_IDs
 			Serial.println();
@@ -294,20 +295,20 @@ String hueDino::getLightIds(void)
 
 String hueDino::getGroupIds(void)
 {
-	StaticJsonBuffer<4096> jsonBuffer;
+	StaticJsonDocument<4096> jsonBuffer;
 	String json = ""; 
 	
 
 	json = _getGroups();
-	JsonObject& root = jsonBuffer.parseObject(json);
-    
+    deserializeJson(jsonBuffer, json);
+	JsonObject root = jsonBuffer.as<JsonObject>();    
 	
 	int j=0;
 
 	for(JsonObject::iterator it=root.begin(); it!=root.end(); ++it)
 	{
-		groupIds[j] = it->key;
-		groupNames[j] = root[groupIds[j]]["name"].asString();
+		groupIds[j] = it->key().c_str();
+		groupNames[j] = jsonBuffer[groupIds[j]]["name"].as<String>();
 
 		#ifdef DEBUG_IDs
 			Serial.println();
@@ -523,12 +524,3 @@ String hueDino::_getLights(void)
 
 	return _restclient.readResponse();
 }
-
-
-
-
-
-
-
-
-
